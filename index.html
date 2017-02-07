@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+
+.centered {
+	text-align: center;
+	font-size: 55px;
+	color: #E15076;
+}
+
+.buttons {
+	text-align: center;
+	font-size: 20px;
+	color: #1C1214;
+}
+
+</style>
+
+<head>
+	<meta charset="utf-8">
+	<title>Random Numbers</title>
+	<link rel="stylesheet" href="style.css" media="screen">
+	<link rel="stylesheet" href="../../_common/demo.css" media="screen" type="text/css">
+</head>
+
+<body>
+	<div class="centered">
+		Random Numbers
+		<br>
+		<button class="buttons" id="startCircles" onclick="startCircles()">Start Generating Circles</button>
+		<button class="buttons" id="startLines" onclick="startLines()">Start Generating Lines</button>
+		<button class="buttons" id="clean" onclick="clean()">Clean this Mess!</button>
+		<br>
+		<button class="buttons" id="stop" onclick="stop()">Stop</button>
+	</div>
+	<canvas id="graph" width="1570" height="560" style="border:4px solid #1C1214;"></canvas>
+	
+	
+	
+	
+	
+	
+	
+<script src="//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dojo/dojo.js" data-dojo-config="isDebug: 1, async: 1, parseOnLoad: 1"></script>
+	
+<script>
+	
+var circleTimer = null;	
+var circlesRunning = false;
+var lineTimer = null;
+var linesRunning = false;
+	
+	function startCircles() {
+		require(["dojo/dom", "dojo/domReady!", "dojox/timing", "dijit/form/Button", "dojo/dom-style"], function(dom){
+			if(circlesRunning == false) {
+				circlesRunning = true;
+				circleTimer = new dojox.timing.Timer(100);
+				circleTimer.onTick = function(){
+					randoCircles();
+				}
+				circleTimer.onStart = function(){
+					console.info("Starting timer");
+				}
+				circleTimer.start();
+			}
+		});
+	}
+	
+	function startLines() {
+		require(["dojo/dom", "dojo/domReady!", "dojox/timing", "dijit/form/Button", "dojo/dom-style"], function(dom){
+			if(linesRunning == false) {
+				linesRunning = true;
+				lineTimer = new dojox.timing.Timer(100);
+				lineTimer.onTick = function(){
+					randoLines();
+				}
+				lineTimer.onStart = function(){
+					console.info("Starting timer");
+				}
+				lineTimer.start();
+			}	
+		});
+	}
+	
+	function stop() {
+		require(["dojo/dom", "dojo/domReady!", "dojox/timing", "dijit/form/Button", "dojo/dom-style"], function(dom){
+			circleTimer.stop();
+			lineTimer.stop();
+			circlesRunning = false;
+			linesRunning = false;
+		});
+	}
+	
+	function clean() {
+		var graph = document.getElementById("graph");
+		var context = graph.getContext("2d");
+		context.clearRect(0, 0, context.canvas.clientWidth, context.canvas.clientHeight);
+	}
+	
+	
+	function randoCircles() {
+		var graph = document.getElementById("graph");
+		var context = graph.getContext("2d");
+	
+		var x = Math.floor(Math.random() * context.canvas.clientWidth);
+		var y = Math.floor(Math.random() * context.canvas.clientHeight);
+		var r = Math.ceil(Math.random() * 100);
+		
+		var color = Math.floor(Math.random() * 5);
+		if(color == 0) {
+			color = "yellow";
+		}
+		else if(color == 1) {
+			color = "blue";
+		}
+		else if(color == 2) {
+			color = "green";
+		}
+		else if(color == 3) {
+			color = "pink";
+		}
+		else {
+			color = "red";
+		}
+		
+		context.beginPath();
+		context.arc(x, y, r, 0, 2*Math.PI);
+		context.fillStyle = color;
+		context.fill();
+	}
+	
+	function randoLines() {
+		var graph = document.getElementById("graph");
+		var context = graph.getContext("2d");
+	
+		var x1 = Math.floor(Math.random() * context.canvas.clientWidth);
+		var y1 = Math.floor(Math.random() * context.canvas.clientHeight);
+		var x2 = Math.floor(Math.random() * context.canvas.clientWidth);
+		var y2 = Math.floor(Math.random() * context.canvas.clientHeight);
+		var thickness = Math.ceil(Math.random() * 10);
+		
+		var color = Math.floor(Math.random() * 5);
+		if(color == 0) {
+			color = "yellow";
+		}
+		else if(color == 1) {
+			color = "blue";
+		}
+		else if(color == 2) {
+			color = "green";
+		}
+		else if(color == 3) {
+			color = "pink";
+		}
+		else {
+			color = "red";
+		}
+		
+		context.beginPath();
+		context.moveTo(x1,y1);
+		context.lineTo(x2,y2);
+		context.strokeStyle = color;
+		context.lineWidth = thickness;
+		context.stroke();
+	}
+</script>
+
+</body>
+</html>
