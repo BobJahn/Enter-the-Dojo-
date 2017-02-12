@@ -3,6 +3,10 @@
 
 <style>
 
+body {
+	background-color: #000000;
+}
+
 .centered {
 	text-align: center;
 	font-size: 55px;
@@ -10,9 +14,16 @@
 }
 
 .buttons {
+	border-radius: 25px;
+	border: 2px solid #132eb6;
 	text-align: center;
 	font-size: 20px;
 	color: #1C1214;
+}
+
+.canvas {
+	background-color: #a27f7f;
+	border:4px solid #fcfcfc;
 }
 
 </style>
@@ -28,13 +39,16 @@
 	<div class="centered">
 		Random Numbers
 		<br>
+		<input type="range" min="1" id="slider" value="50" oninput="adjustSpeed()" onchange="adjustSpeed()">
+		<br>
 		<button class="buttons" id="startCircles" onclick="startCircles()">Start Generating Circles</button>
 		<button class="buttons" id="startLines" onclick="startLines()">Start Generating Lines</button>
 		<button class="buttons" id="clean" onclick="clean()">Clean this Mess!</button>
 		<br>
 		<button class="buttons" id="stop" onclick="stop()">Stop</button>
+		
 	</div>
-	<canvas id="graph" width="1570" height="560" style="border:4px solid #1C1214;"></canvas>
+	<canvas class="canvas" id="graph" width="1570" height="560"></canvas>
 	
 	
 	
@@ -50,12 +64,14 @@ var circleTimer = null;
 var circlesRunning = false;
 var lineTimer = null;
 var linesRunning = false;
+var sliderSpeed = null;
 	
 	function startCircles() {
 		require(["dojo/dom", "dojo/domReady!", "dojox/timing", "dijit/form/Button", "dojo/dom-style"], function(dom){
+			sliderSpeed = dom.byId("slider").value;
 			if(circlesRunning == false) {
 				circlesRunning = true;
-				circleTimer = new dojox.timing.Timer(100);
+				circleTimer = new dojox.timing.Timer(1000/sliderSpeed);
 				circleTimer.onTick = function(){
 					randoCircles();
 				}
@@ -69,9 +85,10 @@ var linesRunning = false;
 	
 	function startLines() {
 		require(["dojo/dom", "dojo/domReady!", "dojox/timing", "dijit/form/Button", "dojo/dom-style"], function(dom){
+			sliderSpeed = dom.byId("slider").value;
 			if(linesRunning == false) {
 				linesRunning = true;
-				lineTimer = new dojox.timing.Timer(100);
+				lineTimer = new dojox.timing.Timer(1000/sliderSpeed);
 				lineTimer.onTick = function(){
 					randoLines();
 				}
@@ -85,10 +102,48 @@ var linesRunning = false;
 	
 	function stop() {
 		require(["dojo/dom", "dojo/domReady!", "dojox/timing", "dijit/form/Button", "dojo/dom-style"], function(dom){
-			circleTimer.stop();
-			lineTimer.stop();
+			if(circleTimer != null) {
+				circleTimer.stop();
+			}
+			if(lineTimer != null) {
+				lineTimer.stop();
+			}
 			circlesRunning = false;
 			linesRunning = false;
+		});
+	}
+	
+	function adjustSpeed() {
+		require(["dojo/dom", "dojo/domReady!", "dojox/timing", "dijit/form/Button", "dojo/dom-style"], function(dom){
+			if(circleTimer != null) {
+				circleTimer.stop();
+			}
+			if(lineTimer != null) {
+				lineTimer.stop();
+			}
+			if(circlesRunning == true) {
+				sliderSpeed = dom.byId("slider").value;
+				circleTimer = new dojox.timing.Timer(1000/sliderSpeed);
+				circleTimer.onTick = function(){
+					randoCircles();
+				}
+				circleTimer.onStart = function(){
+					console.info("Starting timer");
+				}
+				circleTimer.start();
+			}
+			
+			if(linesRunning == true) {
+				sliderSpeed = dom.byId("slider").value;
+				lineTimer = new dojox.timing.Timer(1000/sliderSpeed);
+				lineTimer.onTick = function(){
+					randoLines();
+				}
+				lineTimer.onStart = function(){
+					console.info("Starting timer");
+				}
+				lineTimer.start();
+			}
 		});
 	}
 	
@@ -107,26 +162,11 @@ var linesRunning = false;
 		var y = Math.floor(Math.random() * context.canvas.clientHeight);
 		var r = Math.ceil(Math.random() * 100);
 		
-		var color = Math.floor(Math.random() * 5);
-		if(color == 0) {
-			color = "yellow";
-		}
-		else if(color == 1) {
-			color = "blue";
-		}
-		else if(color == 2) {
-			color = "green";
-		}
-		else if(color == 3) {
-			color = "pink";
-		}
-		else {
-			color = "red";
-		}
+		
 		
 		context.beginPath();
 		context.arc(x, y, r, 0, 2*Math.PI);
-		context.fillStyle = color;
+		context.fillStyle = getColor();
 		context.fill();
 	}
 	
@@ -140,6 +180,17 @@ var linesRunning = false;
 		var y2 = Math.floor(Math.random() * context.canvas.clientHeight);
 		var thickness = Math.ceil(Math.random() * 10);
 		
+		
+		
+		context.beginPath();
+		context.moveTo(x1,y1);
+		context.lineTo(x2,y2);
+		context.strokeStyle = getColor();
+		context.lineWidth = thickness;
+		context.stroke();
+	}
+	
+	function getColor() {
 		var color = Math.floor(Math.random() * 5);
 		if(color == 0) {
 			color = "yellow";
@@ -157,12 +208,7 @@ var linesRunning = false;
 			color = "red";
 		}
 		
-		context.beginPath();
-		context.moveTo(x1,y1);
-		context.lineTo(x2,y2);
-		context.strokeStyle = color;
-		context.lineWidth = thickness;
-		context.stroke();
+		return color;
 	}
 </script>
 
